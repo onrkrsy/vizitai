@@ -1,0 +1,244 @@
+# İlaç Mümessili Eğitim Simülasyonu - Product Requirements Document (PRD)
+
+## 1. Proje Genel Bilgileri
+
+### 1.1 Proje Amacı
+Yeni başlayan veya ilaç güncellemeleri olan mümessilerin, doktorlarla olan etkileşimlerini güvenli bir ortamda pratik yapabilmeleri için AI destekli sesli simülasyon platformu geliştirmek.
+
+### 1.2 Hedef Kullanıcılar
+- Yeni işe başlayan ilaç mümessilleri
+- Yeni ilaç lansmanlarında çalışan deneyimli mümessiller
+- Eğitim koordinatörleri ve yöneticiler
+
+### 1.3 Başarı Kriterleri
+- Kullanıcıların simülasyon sonrası güven seviyesinde %30+ artış
+- Gerçek doktor ziyaretlerinde ilk deneme başarı oranında iyileşme
+- Platform kullanım oranı %80+ (hedeflenen kullanıcı grubu için)
+
+## 2. Teknik Gereksinimler
+
+### 2.1 Frontend Stack
+- **HTML5** - Semantik yapı
+- **Vanilla JavaScript** - ES6+ özellikleri
+- **CSS3** - Responsive tasarım
+- **Web APIs:**
+  - Web Speech API (Speech Recognition)
+  - SpeechSynthesis API (Text-to-Speech)
+  - MediaRecorder API (ses kaydı backup)
+
+### 2.2 Backend & API Entegrasyonları
+- **LLM API:** Gemini, OpenAI GPT-4 veya GPT-3.5 Turbo
+- **Alternatif STT:** OpenAI Whisper API (Web Speech API yetersiz kalırsa)
+- **Veritabanı:** JSON dosyaları (POC için) → PostgreSQL (production)
+
+### 2.3 Tarayıcı Desteği
+- Chrome/Edge 80+
+- Firefox 75+ (sınırlı ses desteği)
+- Safari 14+ (sınırlı ses desteği)
+
+## 3. Fonksiyonel Gereksinimler
+
+### 3.1 Senaryo Yönetimi
+- **Senaryo Seçimi:**
+  - Doktor tipi seçimi (Pratisyen, Uzman, Akademisyen)
+  - Uzmanlık alanı seçimi (Dahiliye, Kardiyoloji, Onkoloji, vb.)
+  - Kişilik profili seçimi (Açık fikirli, Skeptik, Meşgul, Detaycı)
+  - İlaç kategorisi seçimi
+  - Zorluk seviyesi (Başlangıç, Orta, İleri)
+
+- **Dinamik Prompt Oluşturma:**
+  - Seçilen parametrelere göre otomatik sistem promptu
+  - Doktor karakterinin tutarlı davranışı
+  - Senaryo süresince karakter korunumu
+
+### 3.2 Sesli Etkileşim
+- **Ses Girişi:**
+  - Web Speech API ile gerçek zamanlı tanıma
+  - Türkçe dil desteği
+  - Mikrofon izni yönetimi
+  - Ses seviyesi göstergesi
+
+- **Ses Çıkışı:**
+  - Browser SpeechSynthesis API
+  - Türkçe ses seçenekleri
+  - Konuşma hızı ayarlama
+  - Ses tonalama (doktor karakterine uygun)
+
+### 3.3 Konuşma Yönetimi
+- **Gerçek Zamanlı İşleme:**
+  - Kullanıcı konuşması → Metin dönüşümü
+  - LLM API çağrısı
+  - Doktor yanıtı üretimi
+  - Metin → Ses dönüşümü
+
+- **Konuşma Akışı:**
+  - Sıralı konuşma yönetimi
+  - Konuşma tamamlanma algılama
+  - Sessizlik süresi ayarlama
+  - Manuel konuşma bitirme butonu
+
+### 3.4 İçerik Gösterimi
+- **Transkript Ekranı:**
+  - Gerçek zamanlı konuşma metinleri
+  - Kullanıcı/Doktor konuşmalarının ayrımı
+  - Scroll otomasyonu
+  - Konuşma geçmişi kaydetme
+
+- **Senaryo Bilgileri:**
+  - Aktif doktor profili gösterimi
+  - İlaç bilgileri referans paneli
+  - Süre göstergesi
+  - İlerleme barı
+
+## 4. Kullanıcı Arayüzü Gereksinimleri
+
+### 4.1 Ana Ekranlar
+
+**1. Giriş Ekranı:**
+- Platform tanıtımı
+- Hızlı başlangıç rehberi
+- Geçmiş simülasyonlar listesi
+
+**2. Senaryo Kurulum Ekranı:**
+- Parametre seçim formları
+- Önizleme/Açıklama metinleri
+- "Simülasyonu Başlat" butonu
+
+**3. Simülasyon Ekranı:**
+- Ses kontrolü (mikrofon açma/kapama)
+- Konuşma transkripti alanı
+- Doktor profil bilgisi
+- Simülasyonu sonlandırma butonu
+
+**4. Sonuç Ekranı:**
+- Performans özeti
+- Konuşma transkripti tam görünüm
+- İyileştirme önerileri
+- Yeniden deneme seçenekleri
+
+### 4.2 UI/UX Prensipleri
+- **Responsive Design:** Tablet/masaüstü odaklı
+- **Erişilebilirlik:** WCAG 2.1 AA uyumlu
+- **Sade Tasarım:** Dikkat dağıtmayacak minimal arayüz
+- **Türkçe Lokalzisasyon:** Tam Türkçe dil desteği
+
+## 5. Teknik Mimari
+
+### 5.1 Frontend Yapısı
+```
+index.html
+├── styles/
+│   ├── main.css
+│   ├── components.css
+│   └── responsive.css
+├── scripts/
+│   ├── app.js (ana uygulama)
+│   ├── speech-handler.js (ses yönetimi)
+│   ├── api-client.js (API çağrıları)
+│   ├── scenario-manager.js (senaryo yönetimi)
+│   └── ui-controller.js (arayüz kontrolleri)
+└── data/
+    ├── scenarios.json
+    ├── doctor-profiles.json
+    └── medications.json
+```
+
+### 5.2 API İletişimi
+- **REST API Pattern**
+- **JSON formatında veri alışverişi**
+- **Error handling ve retry mekanizması**
+- **Rate limiting awareness**
+
+### 5.3 Veri Yönetimi (POC)
+- **LocalStorage:** Kullanıcı tercihleri
+- **SessionStorage:** Aktif simülasyon verileri
+- **JSON dosyaları:** Statik senaryo verileri
+
+## 6. POC (Proof of Concept) Kapsamı
+
+### 6.1 POC İçeriği
+- **3 Temel Senaryo:**
+  1. Kardiyoloji uzmanı ile antihipertansif ilaç sunumu
+  2. Pratisyen hekim ile antibiyotik tanıtımı  
+  3. Skeptik internist ile diyabet ilacı tartışması
+
+- **2 Zorluk Seviyesi:**
+  - Başlangıç: Açık fikirli doktor
+  - Orta: Sorgucu doktor
+
+- **Temel Özellikler:**
+  - Sesli etkileşim
+  - Gerçek zamanlı transkript
+  - Basit performans geri bildirimi
+
+### 6.2 POC Dışında Kalanlar
+- Detaylı performans analizi
+- Çoklu dil desteği
+- Gelişmiş raporlama
+- Kullanıcı hesap yönetimi
+- Video tabanlı özellikler
+
+## 7. Teknik Riskler ve Çözümler
+
+### 7.1 Başlıca Riskler
+- **Web Speech API Sınırları:** Tarayıcı uyumluluğu ve kalite
+- **LLM API Maliyetleri:** Uzun konuşmalarda maliyet artışı
+- **Türkçe Ses Kalitesi:** TTS doğallık seviyesi
+- **Gecikme Süreleri:** API yanıt sürelerinden kaynaklanan akış kopukluğu
+
+### 7.2 Çözüm Yaklaşımları
+- **Fallback Mekanizmaları:** Web Speech başarısız olursa manuel metin girişi
+- **Maliyet Optimizasyonu:** Token limitleri ve konuşma süre sınırları
+- **Ses İyileştirme:** En kaliteli Türkçe TTS seçimi ve parametre optimizasyonu
+- **Performance Monitoring:** API yanıt süre takibi ve kullanıcı bildirimleri
+
+## 8. Geliştirme Aşamaları
+
+### Faz 1: Temel Altyapı (2 hafta)
+- HTML/CSS/JS temel yapı
+- Web Speech API entegrasyonu
+- GEmini API bağlantısı
+- Temel UI componentleri
+
+### Faz 2: Senaryo Sistemi (2 hafta)
+- Dinamik prompt oluşturma
+- Senaryo parametreleri
+- 3 temel senaryonun implementasyonu
+
+### Faz 3: Kullanıcı Deneyimi (1 hafta)
+- UI polish ve responsive tasarım
+- Error handling ve feedback
+- Performance optimizasyonları
+
+### Faz 4: Test ve İyileştirme (1 hafta)
+- Kullanıcı testleri
+- Bug fixing
+- Dokümantasyon
+
+## 9. Başarı Metrikleri
+
+### 9.1 Teknik Metrikler
+- Ses tanıma doğruluk oranı: >85%
+- API yanıt süresi: <3 saniye
+- Simülasyon tamamlanma oranı: >90%
+- Tarayıcı uyumluluğu: %95+ (target browsers)
+
+### 9.2 Kullanıcı Metrikleri
+- Kullanıcı memnuniyeti: >4/5
+- Öğrenme etkililiği: Pre/post test karşılaştırması
+- Platform kullanım sıklığı
+- Simülasyon tekrar oranı
+
+## 10. Gelecek Geliştirmeler
+
+### 10.1 Orta Vadeli Eklemeler
+- Performans analizi ve detaylı raporlama
+- Yönetici dashboardı
+- Grup bazında istatistikler
+- Mobil responsive iyileştirmeleri
+
+### 10.2 Uzun Vadeli Vizyon
+- AI tabanlı performans değerlendirme
+- Kişiselleştirilmiş öğrenme yolları
+- Entegre CRM bağlantıları
+- Çok dilli platform desteği

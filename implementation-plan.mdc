@@ -1,0 +1,32 @@
+# Implementation Plan
+
+Step 1: Initialize project structure and planning files - Done
+- Frontend ve backend iskeleti oluşturuldu; `index.html`, `styles/`, `scripts/`, `data/`, `server.js`, `routes/`, `providers/`, `package.json` eklendi.
+
+Step 2: Build index.html with scenario form and chat UI - Done
+- Senaryo seçim formu ve sohbet arayüz iskeleti oluşturuldu.
+
+Step 3: Add CSS styles - Done
+- `styles/main.css`, `styles/components.css`, `styles/responsive.css` eklendi.
+
+Step 4: Implement scenario-manager - Done
+- JSON'dan seçenekler yüklendi ve konfigürasyon toplama eklendi.
+
+Step 5: Implement api-client and chat flow - Done
+- `start`/`message` uçlarına bağlandı, transcript ve auto-scroll çalışıyor.
+
+Step 6: Create Express server and Gemini provider - Done
+- REST uçları ve provider soyutlaması eklendi; varsayılan model `gemini-1.5-flash`; 429 kota hatası için açıklayıcı mesaj dönüyor.
+
+Step 7: Connect frontend to backend fully - Done
+- `sessionId` saklama ve auto-scroll uygulandı.
+
+Step 8: Error handling and session storage - Done
+- Hata mesajları yüzeye çıkarıldı; temel durum yönetimi sağlandı.
+
+Step 9: Prepare OpenAI provider - Done
+- Eklenti yapısı hazır; `OpenAIProvider` iskeleti oluşturuldu.
+
+Step 10: Write README for Windows usage
+- Env, install, run.
+

@@ -1,0 +1,6 @@
+.row { display: flex; gap: 8px; }
+.col { display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+.loading { opacity: 0.7; pointer-events: none; }
+
+

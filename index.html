@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>İlaç Mümessili Simülasyonu - POC</title>
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>İlaç Mümessili Eğitim Simülasyonu</h1>
+    <p class="subtitle">POC - Sohbet tabanlı doktor görüşmesi</p>
+  </header>
+
+  <main class="container">
+    <section class="scenario-panel">
+      <h2>Senaryo Kurulumu</h2>
+      <form id="scenario-form">
+        <div class="form-row">
+          <label for="doctorType">Doktor Tipi</label>
+          <select id="doctorType" required></select>
+        </div>
+        <div class="form-row">
+          <label for="specialty">Uzmanlık</label>
+          <select id="specialty" required></select>
+        </div>
+        <div class="form-row">
+          <label for="personality">Kişilik</label>
+          <select id="personality" required></select>
+        </div>
+        <div class="form-row">
+          <label for="drugCategory">İlaç Kategorisi</label>
+          <select id="drugCategory" required></select>
+        </div>
+        <div class="form-row">
+          <label for="difficulty">Zorluk</label>
+          <select id="difficulty" required></select>
+        </div>
+        <button id="startBtn" type="submit" class="primary">Simülasyonu Başlat</button>
+      </form>
+    </section>
+
+    <section class="chat-panel">
+      <h2>Görüşme</h2>
+      <div id="chat" class="chat-window"></div>
+      <form id="message-form" class="message-form" autocomplete="off">
+        <input id="messageInput" type="text" placeholder="Mesajınızı yazın..." required />
+        <button id="sendBtn" type="submit" class="primary" disabled>Gönder</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="/scripts/scenario-manager.js"></script>
+  <script src="/scripts/api-client.js"></script>
+  <script src="/scripts/ui-controller.js"></script>
+  <script src="/scripts/app.js"></script>
+</body>
+</html>
+
+
