@@ -46,9 +46,14 @@
       <h2>Görüşme</h2>
       <div id="chat" class="chat-window"></div>
       <form id="message-form" class="message-form" autocomplete="off">
-        <input id="messageInput" type="text" placeholder="Mesajınızı yazın..." required />
+        <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="icon-btn" disabled>🎙️</button>
+        <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın..." required></textarea>
         <button id="sendBtn" type="submit" class="primary" disabled>Gönder</button>
       </form>
+      <div class="record-row">
+        <div id="recordIndicator" class="record-indicator hidden"><span class="dot"></span> Kaydediliyor</div>
+        <div id="recordHint" class="record-hint hidden">Basılı tutup konuşarak mesajınızı iletebilirsiniz</div>
+      </div>
     </section>
   </main>
 

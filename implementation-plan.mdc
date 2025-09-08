@@ -30,3 +30,7 @@ Step 9: Prepare OpenAI provider - Done
 Step 10: Write README for Windows usage
 - Env, install, run.
 
+Step 11: Add press-and-hold voice input (SpeechRecognition) - Done
+- Mesaj formuna mikrofon butonu eklendi, `styles/main.css` ile minimal stil verildi.
+- `scripts/app.js` içinde tarayıcı SpeechRecognition ile basılı tut-kayıt mantığı ve transcript'i otomatik gönderme uygulandı.
+
