@@ -27,8 +27,14 @@ app.use('/data', express.static(path.join(__dirname, 'data')));
 // API routes
 app.use('/api/chat', chatRouter);
 
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-});
+// Vercel deployment için export
+export default app;
+
+// Local development için
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Server listening on http://localhost:${port}`);
+  });
+}
 
 

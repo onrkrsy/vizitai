@@ -118,9 +118,91 @@ textarea#messageInput {
   100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
 }
 
-.bubble { max-width: 70%; padding: 10px 12px; border-radius: 10px; margin: 6px 0; white-space: pre-wrap; }
-.bubble.user { margin-left: auto; background: #1f2937; }
-.bubble.assistant { margin-right: auto; background: #0e1a2b; border: 1px solid var(--border); }
-.bubble.meta { text-align: center; color: var(--muted); font-size: 12px; background: transparent; }
+.doctor-profile {
+  display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 12px;
+  background: #0b1220; border: 1px solid var(--border); border-radius: 8px;
+}
+.doctor-avatar { font-size: 24px; }
+.doctor-info { flex: 1; }
+.doctor-name { font-weight: 600; color: var(--text); }
+.doctor-specialty { font-size: 14px; color: var(--muted); }
+.personality-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;
+  background: var(--accent); color: #07110b;
+}
+.doctor-status { text-align: right; }
+.status-indicator {
+  padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;
+  background: #16a34a; color: white;
+}
+.status-indicator.busy { background: #dc2626; }
+.status-indicator.thinking { background: #d97706; }
+
+.typing-indicator, .speaking-indicator {
+  display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 6px 0;
+  background: #0b1220; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--muted); font-size: 14px;
+}
+.typing-dots { display: flex; gap: 4px; }
+.typing-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  animation: typing 1.4s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-10px); opacity: 1; }
+}
+.speaking-wave { animation: wave 1s infinite ease-in-out; }
+@keyframes wave {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.bubble { 
+  max-width: 70%; padding: 12px 16px; border-radius: 12px; margin: 8px 0; white-space: pre-wrap;
+  position: relative; display: flex; flex-direction: column; gap: 4px;
+}
+.bubble.user { 
+  margin-left: auto; background: #1f2937; border: 1px solid #374151;
+  align-items: flex-end;
+}
+.bubble.assistant { 
+  margin-right: auto; background: #0e1a2b; border: 1px solid var(--border);
+  align-items: flex-start;
+}
+.bubble.meta { 
+  text-align: center; color: var(--muted); font-size: 12px; background: transparent;
+  border: none; margin: 4px auto; max-width: 100%;
+}
+.bubble-header {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted);
+}
+.bubble-avatar { font-size: 16px; }
+.bubble-name { font-weight: 500; }
+.bubble-time { font-size: 11px; opacity: 0.7; }
+.bubble-content { line-height: 1.4; }
+
+.action-details-btn {
+  position: absolute; top: 8px; right: 8px;
+  background: transparent; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--muted); font-size: 12px; padding: 2px 6px; cursor: pointer;
+  opacity: 0.7; transition: opacity 0.2s;
+}
+.action-details-btn:hover { opacity: 1; background: var(--border); }
+
+.action-popup {
+  position: absolute; top: 100%; right: 0; z-index: 1000;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 12px; font-size: 12px; color: var(--muted);
+  max-width: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+.action-popup::before {
+  content: ''; position: absolute; top: -6px; right: 12px;
+  width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--border);
+}
 
 

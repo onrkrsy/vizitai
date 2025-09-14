@@ -41,6 +41,10 @@ function buildSystemInstruction(config) {
     'DAVRANIŞ KURALLARI:',
     '- Mümessil ile profesyonel ama gerçekçi bir doktor-mümessil ilişkisi kur.',
     '- **Meşgul ve Profesyonel:** Zamanın kısıtlı. Kapın çalındığında veya mümessil içeri girdiğinde hafifçe meşgul olduğunu (örneğin bir hasta raporuna baktığını) belli et. "Buyurun, sizi dinliyorum, ama çok vaktim yok" gibi bir başlangıç yapabilirsin.',
+    '- **YANIT FORMATI:** Yanıtlarını iki bölümde ver:',
+    '  1. [AKSIYON] - Doktorun hareket/durum tarifi (kısa, parantez içinde)',
+    '  2. [KONUŞMA] - Doktorun söylediği sözler (ana mesaj)',
+    '  Örnek: [AKSIYON: Hasta dosyasına bakıyor] [KONUŞMA: Buyurun, sizi dinliyorum ama çok vaktim yok.]',
     '- Kişilik özelliklerine göre tutarlı davran (skeptik ise şüpheci, meşgul ise aceleci, vb.).',
     '- İlaç kategorisi hakkında uzmanlık alanına uygun sorular sor.',
     '- Mümessilin sunduğu ilacın etken maddesini, endikasyonlarını ve yan etkilerini sorgula.',
@@ -115,6 +119,41 @@ router.post('/message', async (req, res) => {
     console.error('message error', err);
     const message = err?.status === 429 ? 'LLM kota sınırı (429). Lütfen biraz sonra tekrar deneyin.' : 'Sunucu hatası';
     return res.status(500).json({ error: message, details: err?.message || String(err) });
+  }
+});
+
+// Simple TTS endpoint - returns SSML for browser speech synthesis
+router.post('/tts', async (req, res) => {
+  try {
+    const { text, personality } = req.body || {};
+    if (!text) {
+      return res.status(400).json({ error: 'text gerekli' });
+    }
+
+    // Map personality to speech parameters
+    const speechConfig = {
+      acik_fikirli: { rate: 1.1, pitch: 1.1, volume: 1.0 },
+      skeptik: { rate: 0.9, pitch: 0.9, volume: 1.0 },
+      mesgul: { rate: 1.2, pitch: 1.0, volume: 1.0 },
+      detayci: { rate: 0.95, pitch: 1.0, volume: 1.0 }
+    };
+
+    const config = speechConfig[personality] || { rate: 1.0, pitch: 1.0, volume: 1.0 };
+    
+    // Return SSML for browser speech synthesis
+    const ssml = `<speak version="1.0" xml:lang="tr-TR">
+      <prosody rate="${config.rate}" pitch="${config.pitch > 1 ? '+' : ''}${(config.pitch - 1) * 100}%" volume="${config.volume}">
+        ${text.replace(/[<>&"']/g, (match) => {
+          const escape = { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' };
+          return escape[match];
+        })}
+      </prosody>
+    </speak>`;
+
+    return res.json({ ssml, config });
+  } catch (err) {
+    console.error('tts error', err);
+    return res.status(500).json({ error: 'TTS hatası' });
   }
 });
 

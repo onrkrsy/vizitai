@@ -23,7 +23,18 @@ window.ApiClient = (() => {
     return data;
   }
 
-  return { start, message };
+  async function tts(text, personality) {
+    const res = await fetch(`${base}/api/chat/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, personality }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error || 'tts failed');
+    return data;
+  }
+
+  return { start, message, tts };
 })();
 
 

@@ -8,6 +8,13 @@
   const recordHint = document.getElementById('recordHint');
   const chat = document.getElementById('chat');
   const recordIndicator = document.getElementById('recordIndicator');
+  const doctorProfile = document.getElementById('doctorProfile');
+  const doctorName = document.getElementById('doctorName');
+  const doctorSpecialty = document.getElementById('doctorSpecialty');
+  const doctorPersonality = document.getElementById('doctorPersonality');
+  const doctorStatus = document.getElementById('doctorStatus');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const speakingIndicator = document.getElementById('speakingIndicator');
 
   let sessionId = null;
   let recognitionSupported = false;
@@ -20,11 +27,93 @@
   let recognitionPrewarmed = false;
   let backgroundRecognitionEnabled = false;
   let isCapturingHold = false;
+  let currentConfig = null;
+
+  function parseDoctorResponse(text) {
+    const actionMatch = text.match(/\[AKSIYON:\s*([^\]]+)\]/);
+    const speechMatch = text.match(/\[KONUŞMA:\s*([^\]]+)\]/);
+    
+    if (actionMatch && speechMatch) {
+      return {
+        action: actionMatch[1].trim(),
+        speech: speechMatch[1].trim(),
+        hasAction: true
+      };
+    }
+    
+    // Fallback: if no format found, treat entire text as speech
+    return {
+      action: null,
+      speech: text.trim(),
+      hasAction: false
+    };
+  }
 
   function addBubble(text, role) {
     const div = document.createElement('div');
     div.className = `bubble ${role}`;
-    div.textContent = text;
+    
+    if (role === 'meta') {
+      div.textContent = text;
+    } else {
+      const header = document.createElement('div');
+      header.className = 'bubble-header';
+      
+      const avatar = document.createElement('span');
+      avatar.className = 'bubble-avatar';
+      avatar.textContent = role === 'user' ? '👤' : '👨‍⚕️';
+      
+      const name = document.createElement('span');
+      name.className = 'bubble-name';
+      name.textContent = role === 'user' ? 'Mümessil' : 'Dr. ' + (doctorName.textContent || 'Doktor');
+      
+      const time = document.createElement('span');
+      time.className = 'bubble-time';
+      time.textContent = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      
+      header.appendChild(avatar);
+      header.appendChild(name);
+      header.appendChild(time);
+      
+      const content = document.createElement('div');
+      content.className = 'bubble-content';
+      
+      if (role === 'assistant') {
+        const parsed = parseDoctorResponse(text);
+        content.textContent = parsed.speech;
+        
+        // Add action details popup if action exists
+        if (parsed.hasAction) {
+          const actionBtn = document.createElement('button');
+          actionBtn.className = 'action-details-btn';
+          actionBtn.textContent = '📋';
+          actionBtn.title = 'Doktor hareketleri';
+          
+          const actionPopup = document.createElement('div');
+          actionPopup.className = 'action-popup hidden';
+          actionPopup.textContent = parsed.action;
+          
+          actionBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            actionPopup.classList.toggle('hidden');
+          });
+          
+          // Close popup when clicking outside
+          document.addEventListener('click', () => {
+            actionPopup.classList.add('hidden');
+          });
+          
+          div.appendChild(actionBtn);
+          div.appendChild(actionPopup);
+        }
+      } else {
+        content.textContent = text;
+      }
+      
+      div.appendChild(header);
+      div.appendChild(content);
+    }
+    
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
   }
@@ -43,6 +132,107 @@
     messageInput.style.height = Math.min(messageInput.scrollHeight, 160) + 'px';
   }
 
+  function updateDoctorProfile(config) {
+    if (!config) return;
+    
+    // Generate doctor name based on specialty
+    const names = {
+      'Kardiyoloji': 'Mehmet Yılmaz',
+      'Endokrinoloji': 'Ayşe Demir', 
+      'Nöroloji': 'Ali Kaya',
+      'Gastroenteroloji': 'Fatma Özkan',
+      'Pulmonoloji': 'Mustafa Çelik'
+    };
+    
+    doctorName.textContent = names[config.specialty] || 'Doktor';
+    doctorSpecialty.textContent = config.specialty || 'Genel';
+    
+    const personalityLabels = {
+      'acik_fikirli': 'Açık Fikirli',
+      'skeptik': 'Şüpheci', 
+      'mesgul': 'Meşgul',
+      'detayci': 'Detaycı'
+    };
+    
+    doctorPersonality.textContent = personalityLabels[config.personality] || 'Nötr';
+    doctorProfile.classList.remove('hidden');
+  }
+
+  function showTypingIndicator() {
+    typingIndicator.classList.remove('hidden');
+    doctorStatus.textContent = 'Düşünüyor';
+    doctorStatus.className = 'status-indicator thinking';
+  }
+
+  function hideTypingIndicator() {
+    typingIndicator.classList.add('hidden');
+    doctorStatus.textContent = 'Hazır';
+    doctorStatus.className = 'status-indicator';
+  }
+
+  function showSpeakingIndicator() {
+    speakingIndicator.classList.remove('hidden');
+    doctorStatus.textContent = 'Konuşuyor';
+    doctorStatus.className = 'status-indicator busy';
+  }
+
+  function hideSpeakingIndicator() {
+    speakingIndicator.classList.add('hidden');
+    doctorStatus.textContent = 'Hazır';
+    doctorStatus.className = 'status-indicator';
+  }
+
+  async function playTTS(text, personality) {
+    try {
+      if (!window.speechSynthesis) {
+        console.warn('Speech synthesis not supported');
+        return;
+      }
+
+      // Extract only the speech part for TTS
+      const parsed = parseDoctorResponse(text);
+      const speechText = parsed.speech;
+
+      const { ssml, config } = await window.ApiClient.tts(speechText, personality);
+      
+      // Parse SSML and apply to speech synthesis
+      const utterance = new SpeechSynthesisUtterance(speechText);
+      utterance.lang = 'tr-TR';
+      utterance.rate = config.rate;
+      utterance.pitch = config.pitch;
+      utterance.volume = config.volume;
+
+      utterance.onstart = () => {
+        showSpeakingIndicator();
+      };
+
+      utterance.onend = () => {
+        hideSpeakingIndicator();
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('TTS error', e);
+        hideSpeakingIndicator();
+      };
+
+      speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('TTS failed', err);
+      // Fallback to basic speech synthesis
+      try {
+        const parsed = parseDoctorResponse(text);
+        const speechText = parsed.speech;
+        const utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.lang = 'tr-TR';
+        utterance.onstart = () => showSpeakingIndicator();
+        utterance.onend = () => hideSpeakingIndicator();
+        speechSynthesis.speak(utterance);
+      } catch (fallbackErr) {
+        console.warn('Fallback TTS failed', fallbackErr);
+      }
+    }
+  }
+
   async function startSimulation(e) {
     e.preventDefault();
     chat.innerHTML = '';
@@ -52,11 +242,17 @@
     addMeta('Senaryo başlatılıyor...');
 
     const config = window.ScenarioManager.collectConfig();
+    currentConfig = config;
     try {
+      updateDoctorProfile(config);
+      showTypingIndicator();
       const { sessionId: sid, message } = await window.ApiClient.start(config);
       sessionId = sid;
       chat.innerHTML = '';
+      hideTypingIndicator();
       addBubble(message, 'assistant');
+      // Auto-play TTS for opening message
+      setTimeout(() => playTTS(message, config.personality), 500);
       sendBtn.disabled = false;
       if (recognitionSupported) {
         holdToTalkBtn.disabled = false;
@@ -161,10 +357,15 @@
     addBubble(text, 'user');
     sendBtn.disabled = true;
     try {
+      showTypingIndicator();
       const { message } = await window.ApiClient.message(sessionId, text);
+      hideTypingIndicator();
       addBubble(message, 'assistant');
+      // Auto-play TTS for assistant responses
+      setTimeout(() => playTTS(message, currentConfig?.personality), 300);
     } catch (err) {
       console.error(err);
+      hideTypingIndicator();
       addMeta('Mesaj gönderilemedi.');
     } finally {
       sendBtn.disabled = false;
@@ -177,10 +378,15 @@
     addBubble(clean, 'user');
     sendBtn.disabled = true;
     try {
+      showTypingIndicator();
       const { message } = await window.ApiClient.message(sessionId, clean);
+      hideTypingIndicator();
       addBubble(message, 'assistant');
+      // Auto-play TTS for assistant responses
+      setTimeout(() => playTTS(message, currentConfig?.personality), 300);
     } catch (err) {
       console.error(err);
+      hideTypingIndicator();
       addMeta('Mesaj gönderilemedi.');
     } finally {
       sendBtn.disabled = false;
@@ -302,6 +508,25 @@
   document.addEventListener('mouseup', stopRecording);
   holdToTalkBtn?.addEventListener('touchstart', startRecording, { passive: true });
   holdToTalkBtn?.addEventListener('touchend', stopRecording, { passive: true });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target === messageInput) return; // Don't interfere with typing
+    
+    if (e.code === 'Space' && !e.repeat) {
+      e.preventDefault();
+      if (recognitionSupported && !isRecording && sessionId) {
+        startRecording();
+      }
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space' && isRecording) {
+      e.preventDefault();
+      stopRecording();
+    }
+  });
 
   // init
   initSpeechRecognition();

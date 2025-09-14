@@ -44,7 +44,28 @@
 
     <section class="chat-panel">
       <h2>Görüşme</h2>
+      <div id="doctorProfile" class="doctor-profile hidden">
+        <div class="doctor-avatar">👨‍⚕️</div>
+        <div class="doctor-info">
+          <div class="doctor-name">Dr. <span id="doctorName">-</span></div>
+          <div class="doctor-specialty"><span id="doctorSpecialty">-</span></div>
+          <div class="doctor-personality"><span id="doctorPersonality" class="personality-badge">-</span></div>
+        </div>
+        <div class="doctor-status">
+          <span id="doctorStatus" class="status-indicator">Hazır</span>
+        </div>
+      </div>
       <div id="chat" class="chat-window"></div>
+      <div id="typingIndicator" class="typing-indicator hidden">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="typing-text">Doktor düşünüyor...</span>
+      </div>
+      <div id="speakingIndicator" class="speaking-indicator hidden">
+        <div class="speaking-wave">🎵</div>
+        <span class="speaking-text">Doktor konuşuyor...</span>
+      </div>
       <form id="message-form" class="message-form" autocomplete="off">
         <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="icon-btn" disabled>🎙️</button>
         <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın..." required></textarea>
