@@ -11,7 +11,7 @@
 <body>
   <header class="app-header">
     <h1>Tıbbi Mümessil Eğitim Simülasyonu</h1>
-    <p class="subtitle">Sohbet tabanlı doktor görüşmesi</p>
+    <p class="subtitle">AI destekli doktor görüşmesi pratiği</p>
   </header>
 
   <main class="container">
@@ -38,14 +38,19 @@
           <label for="difficulty">Zorluk</label>
           <select id="difficulty" required></select>
         </div>
-        <button id="startBtn" type="submit" class="primary">Simülasyonu Başlat</button>
+        <button id="startBtn" type="submit" class="primary">🚀 Simülasyonu Başlat</button>
       </form>
     </section>
 
     <section class="chat-panel">
-      <h2>Görüşme</h2>
+      <h2>💬 Görüşme</h2>
       <div id="doctorProfile" class="doctor-profile hidden">
-        <div class="doctor-avatar">👨‍⚕️</div>
+        <div class="doctor-avatar-container">
+          <div id="doctorAvatar" class="doctor-avatar">👨‍⚕️</div>
+          <div id="doctorAnimation" class="doctor-animation hidden">
+            <div class="speech-bubble">💭</div>
+          </div>
+        </div>
         <div class="doctor-info">
           <div class="doctor-name">Dr. <span id="doctorName">-</span></div>
           <div class="doctor-specialty"><span id="doctorSpecialty">-</span></div>
@@ -54,7 +59,44 @@
         <div class="doctor-status">
           <span id="doctorStatus" class="status-indicator">Hazır</span>
         </div>
+        <div class="doctor-controls">
+          <button id="toggleTTS" type="button" class="audio-toggle-btn disabled" title="Sesli cevap kapalı - tıklayarak açın">
+            🔇
+          </button>
+        </div>
       </div>
+
+      <!-- Eğitim Paneli -->
+      <div id="trainingPanel" class="training-panel hidden">
+        <div class="training-header">
+          <h3>📊 Performans Analizi</h3>
+          <button id="toggleTraining" class="toggle-btn">📈</button>
+        </div>
+        <div id="trainingContent" class="training-content">
+          <div class="metric-row">
+            <span class="metric-label">Konuşma Süresi:</span>
+            <span id="conversationTime" class="metric-value">0:00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Mesaj Sayısı:</span>
+            <span id="messageCount" class="metric-value">0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Doktor Memnuniyeti:</span>
+            <div id="satisfactionBar" class="satisfaction-bar">
+              <div id="satisfactionFill" class="satisfaction-fill"></div>
+            </div>
+          </div>
+          <div class="suggestions">
+            <h4>💡 İyileştirme Önerileri</h4>
+            <ul id="suggestionsList">
+              <li>Doktorun ihtiyaçlarını daha iyi anlayın</li>
+              <li>Açık uçlu sorular sorun</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div id="chat" class="chat-window"></div>
       <div id="typingIndicator" class="typing-indicator hidden">
         <div class="typing-dots">
@@ -69,8 +111,9 @@
       <form id="message-form" class="message-form" autocomplete="off">
         <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="icon-btn" disabled>🎙️</button>
         <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın..." required></textarea>
-        <button id="sendBtn" type="submit" class="primary" disabled>Gönder</button>
+        <button id="sendBtn" type="submit" class="primary" disabled>📤 Gönder</button>
       </form>
+      
       <div class="record-row">
         <div id="recordIndicator" class="record-indicator hidden"><span class="dot"></span> Kaydediliyor</div>
         <div id="recordHint" class="record-hint hidden">Basılı tutup konuşarak mesajınızı iletebilirsiniz</div>
@@ -81,6 +124,7 @@
   <script src="/scripts/scenario-manager.js"></script>
   <script src="/scripts/api-client.js"></script>
   <script src="/scripts/ui-controller.js"></script>
+  <script src="/scripts/training-manager.js"></script>
   <script src="/scripts/app.js"></script>
 </body>
 </html>

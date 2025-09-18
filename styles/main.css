@@ -94,6 +94,46 @@ select, input[type="text"] {
 .record-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
 .record-hint { color: var(--muted); font-size: 12px; }
 
+/* Doktor Kontrolleri */
+.doctor-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.audio-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.audio-toggle-btn.disabled {
+  opacity: 0.5;
+  color: var(--muted);
+}
+
+.audio-toggle-btn.disabled:hover {
+  border-color: var(--border);
+  color: var(--muted);
+  background: transparent;
+}
+
 textarea#messageInput {
   flex: 1;
   resize: none;
@@ -121,8 +161,69 @@ textarea#messageInput {
 .doctor-profile {
   display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 12px;
   background: #0b1220; border: 1px solid var(--border); border-radius: 8px;
+  position: relative;
+  overflow: hidden;
 }
-.doctor-avatar { font-size: 24px; }
+
+.doctor-profile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), #3b82f6, var(--accent));
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.doctor-avatar-container {
+  position: relative;
+}
+
+.doctor-avatar { 
+  font-size: 24px; 
+  transition: transform 0.3s ease;
+}
+
+.doctor-avatar.talking {
+  animation: doctor-talk 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes doctor-talk {
+  0% { transform: scale(1) rotate(-2deg); }
+  100% { transform: scale(1.05) rotate(2deg); }
+}
+
+.doctor-animation {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  animation: float 2s ease-in-out infinite;
+}
+
+.doctor-animation.speaking {
+  animation: float-speak 1s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes float-speak {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-8px) scale(1.1); }
+}
+
+.speech-bubble {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
 .doctor-info { flex: 1; }
 .doctor-name { font-weight: 600; color: var(--text); }
 .doctor-specialty { font-size: 14px; color: var(--muted); }
@@ -137,6 +238,105 @@ textarea#messageInput {
 }
 .status-indicator.busy { background: #dc2626; }
 .status-indicator.thinking { background: #d97706; }
+
+/* Eğitim Paneli */
+.training-panel {
+  background: linear-gradient(135deg, #0b1220, #1e293b);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.training-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.training-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px;
+}
+
+.toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.training-content {
+  display: grid;
+  gap: 8px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric-value {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.satisfaction-bar {
+  width: 80px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.satisfaction-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+  width: 50%;
+  transition: width 0.5s ease;
+}
+
+.suggestions {
+  margin-top: 8px;
+}
+
+.suggestions h4 {
+  margin: 0 0 4px 0;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.suggestions ul {
+  margin: 0;
+  padding-left: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.suggestions li {
+  margin-bottom: 2px;
+}
 
 .typing-indicator, .speaking-indicator {
   display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 6px 0;

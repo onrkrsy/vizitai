@@ -15,6 +15,10 @@
   const doctorStatus = document.getElementById('doctorStatus');
   const typingIndicator = document.getElementById('typingIndicator');
   const speakingIndicator = document.getElementById('speakingIndicator');
+  const doctorAvatar = document.getElementById('doctorAvatar');
+  const doctorAnimation = document.getElementById('doctorAnimation');
+  const toggleTrainingBtn = document.getElementById('toggleTraining');
+  const toggleTTSBtn = document.getElementById('toggleTTS');
 
   let sessionId = null;
   let recognitionSupported = false;
@@ -28,6 +32,7 @@
   let backgroundRecognitionEnabled = false;
   let isCapturingHold = false;
   let currentConfig = null;
+  let ttsEnabled = false; // Sesli cevap varsayılan olarak kapalı
 
   function parseDoctorResponse(text) {
     const actionMatch = text.match(/\[AKSIYON:\s*([^\]]+)\]/);
@@ -116,6 +121,12 @@
     
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
+    
+    // Eğitim analizi
+    if (window.TrainingManager) {
+      window.TrainingManager.addMessage(role);
+      window.TrainingManager.analyzeMessage(text, role);
+    }
   }
 
   function addMeta(text) {
@@ -137,15 +148,22 @@
     
     // Generate doctor name based on specialty
     const names = {
-      'Kardiyoloji': 'Mehmet Yılmaz',
-      'Endokrinoloji': 'Ayşe Demir', 
-      'Nöroloji': 'Ali Kaya',
-      'Gastroenteroloji': 'Fatma Özkan',
-      'Pulmonoloji': 'Mustafa Çelik'
+      'dahiliye': 'Ahmet Sevgi',
+      'kardiyoloji': 'Mehmet Yılmaz',
+      'onkoloji': 'Ayşe Demir',
+      'endokrinoloji': 'Can Özkan'
     };
     
-    doctorName.textContent = names[config.specialty] || 'Doktor';
-    doctorSpecialty.textContent = config.specialty || 'Genel';
+    doctorName.textContent = names[config.specialty] || 'Ali Veli';
+    
+    // Uzmanlık alanını düzgün formatla
+    const specialtyLabels = {
+      'dahiliye': 'Dahiliye',
+      'kardiyoloji': 'Kardiyoloji', 
+      'onkoloji': 'Onkoloji',
+      'endokrinoloji': 'Endokrinoloji'
+    };
+    doctorSpecialty.textContent = specialtyLabels[config.specialty] || 'Genel';
     
     const personalityLabels = {
       'acik_fikirli': 'Açık Fikirli',
@@ -162,28 +180,88 @@
     typingIndicator.classList.remove('hidden');
     doctorStatus.textContent = 'Düşünüyor';
     doctorStatus.className = 'status-indicator thinking';
+    
+    // Doktor animasyonu
+    if (doctorAvatar) {
+      doctorAvatar.classList.add('talking');
+    }
+    if (doctorAnimation) {
+      doctorAnimation.classList.remove('hidden');
+      doctorAnimation.classList.add('speaking');
+    }
   }
 
   function hideTypingIndicator() {
     typingIndicator.classList.add('hidden');
     doctorStatus.textContent = 'Hazır';
     doctorStatus.className = 'status-indicator';
+    
+    // Doktor animasyonu
+    if (doctorAvatar) {
+      doctorAvatar.classList.remove('talking');
+    }
+    if (doctorAnimation) {
+      doctorAnimation.classList.remove('speaking');
+    }
   }
 
   function showSpeakingIndicator() {
     speakingIndicator.classList.remove('hidden');
     doctorStatus.textContent = 'Konuşuyor';
     doctorStatus.className = 'status-indicator busy';
+    
+    // Doktor animasyonu
+    if (doctorAvatar) {
+      doctorAvatar.classList.add('talking');
+    }
+    if (doctorAnimation) {
+      doctorAnimation.classList.remove('hidden');
+      doctorAnimation.classList.add('speaking');
+    }
   }
 
   function hideSpeakingIndicator() {
     speakingIndicator.classList.add('hidden');
     doctorStatus.textContent = 'Hazır';
     doctorStatus.className = 'status-indicator';
+    
+    // Doktor animasyonu
+    if (doctorAvatar) {
+      doctorAvatar.classList.remove('talking');
+    }
+    if (doctorAnimation) {
+      doctorAnimation.classList.remove('speaking');
+    }
+  }
+
+  function toggleTTS() {
+    ttsEnabled = !ttsEnabled;
+    
+    if (toggleTTSBtn) {
+      if (ttsEnabled) {
+        toggleTTSBtn.textContent = '🔊';
+        toggleTTSBtn.classList.remove('disabled');
+        toggleTTSBtn.title = 'Sesli cevap açık - tıklayarak kapatın';
+      } else {
+        toggleTTSBtn.textContent = '🔇';
+        toggleTTSBtn.classList.add('disabled');
+        toggleTTSBtn.title = 'Sesli cevap kapalı - tıklayarak açın';
+      }
+    }
+    
+    // Mevcut konuşmayı durdur
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   async function playTTS(text, personality) {
     try {
+      if (!ttsEnabled) {
+        console.log('TTS disabled by user');
+        return;
+      }
+      
       if (!window.speechSynthesis) {
         console.warn('Speech synthesis not supported');
         return;
@@ -251,6 +329,13 @@
       chat.innerHTML = '';
       hideTypingIndicator();
       addBubble(message, 'assistant');
+      
+      // Eğitim panelini başlat
+      if (window.TrainingManager) {
+        window.TrainingManager.startSession();
+        window.TrainingManager.showTrainingPanel();
+      }
+      
       // Auto-play TTS for opening message
       setTimeout(() => playTTS(message, config.personality), 500);
       sendBtn.disabled = false;
@@ -502,6 +587,18 @@
 
   form.addEventListener('submit', startSimulation);
   messageForm.addEventListener('submit', sendMessage);
+  
+  if (toggleTrainingBtn) {
+    toggleTrainingBtn.addEventListener('click', () => {
+      if (window.TrainingManager) {
+        window.TrainingManager.toggleTrainingPanel();
+      }
+    });
+  }
+
+  if (toggleTTSBtn) {
+    toggleTTSBtn.addEventListener('click', toggleTTS);
+  }
 
   // Press-and-hold listeners
   holdToTalkBtn?.addEventListener('mousedown', startRecording);
@@ -531,6 +628,11 @@
   // init
   initSpeechRecognition();
   window.ScenarioManager.initSelectors();
+  
+  // TTS durumunu başlat
+  if (toggleTTSBtn) {
+    toggleTTSBtn.title = 'Sesli cevap kapalı - tıklayarak açın';
+  }
 })();
 
 
