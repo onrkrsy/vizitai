@@ -1,125 +1,190 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="tr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tıbbi Mümessil Simülasyonu - POC</title>
+  <title>Tıbbi Mümessil Simülasyonu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/main.css">
   <link rel="stylesheet" href="/styles/components.css">
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
-  <header class="app-header">
-    <h1>Tıbbi Mümessil Eğitim Simülasyonu</h1>
-    <p class="subtitle">AI destekli doktor görüşmesi pratiği</p>
-  </header>
-
-  <main class="container">
-    <section class="scenario-panel">
-      <h2>Senaryo Kurulumu</h2>
-      <form id="scenario-form">
-        <div class="form-row">
-          <label for="doctorType">Doktor Tipi</label>
-          <select id="doctorType" required></select>
-        </div>
-        <div class="form-row">
-          <label for="specialty">Uzmanlık</label>
-          <select id="specialty" required></select>
-        </div>
-        <div class="form-row">
-          <label for="personality">Kişilik</label>
-          <select id="personality" required></select>
-        </div>
-        <div class="form-row">
-          <label for="drugCategory">İlaç Kategorisi</label>
-          <select id="drugCategory" required></select>
-        </div>
-        <div class="form-row">
-          <label for="difficulty">Zorluk</label>
-          <select id="difficulty" required></select>
-        </div>
-        <button id="startBtn" type="submit" class="primary">🚀 Simülasyonu Başlat</button>
-      </form>
-    </section>
-
-    <section class="chat-panel">
-      <h2>💬 Görüşme</h2>
-      <div id="doctorProfile" class="doctor-profile hidden">
-        <div class="doctor-avatar-container">
-          <div id="doctorAvatar" class="doctor-avatar">👨‍⚕️</div>
-          <div id="doctorAnimation" class="doctor-animation hidden">
-            <div class="speech-bubble">💭</div>
-          </div>
-        </div>
-        <div class="doctor-info">
-          <div class="doctor-name">Dr. <span id="doctorName">-</span></div>
-          <div class="doctor-specialty"><span id="doctorSpecialty">-</span></div>
-          <div class="doctor-personality"><span id="doctorPersonality" class="personality-badge">-</span></div>
-        </div>
-        <div class="doctor-status">
-          <span id="doctorStatus" class="status-indicator">Hazır</span>
-        </div>
-        <div class="doctor-controls">
-          <button id="toggleTTS" type="button" class="audio-toggle-btn disabled" title="Sesli cevap kapalı - tıklayarak açın">
-            🔇
-          </button>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-text">
+        <span class="header-eyebrow">Simülasyon Platformu</span>
+        <h1>Tıbbi Mümessil Eğitim Simülasyonu</h1>
+        <p class="subtitle">AI destekli doktor görüşmesi pratiği</p>
+      </div>
+      <div class="header-meta">
+        <span class="version-pill">V 1.0</span>
+        <div class="status-chip" aria-live="polite">
+          <span class="status-dot status-idle" aria-hidden="true"></span>
+          <span class="status-text">Oturum hazır</span>
         </div>
       </div>
+    </header>
 
-      <!-- Eğitim Paneli -->
-      <div id="trainingPanel" class="training-panel hidden">
-        <div class="training-header">
-          <h3>📊 Performans Analizi</h3>
-          <button id="toggleTraining" class="toggle-btn">📈</button>
+    <main class="layout" aria-label="Simülasyon arayüzü">
+      <section class="card setup-card" aria-labelledby="setup-title">
+        <div class="card-header">
+          <span class="card-eyebrow">Senaryo Ayarları</span>
+          <h2 id="setup-title">Simülasyonu Kurgula</h2>
+          <p>Seçtiğiniz parametreler doktorun tutumunu, sorularını ve görüşme tonunu belirler.</p>
         </div>
-        <div id="trainingContent" class="training-content">
-          <div class="metric-row">
-            <span class="metric-label">Konuşma Süresi:</span>
-            <span id="conversationTime" class="metric-value">0:00</span>
+        <form id="scenario-form" class="form-grid">
+          <div class="field">
+            <label for="doctorType">Doktor Tipi</label>
+            <div class="input-wrapper">
+              <select id="doctorType" required></select>
+            </div>
+            <p class="field-hint">Görüşmenin hiyerarşisini ve karar verme hızını etkiler.</p>
           </div>
-          <div class="metric-row">
-            <span class="metric-label">Mesaj Sayısı:</span>
-            <span id="messageCount" class="metric-value">0</span>
+          <div class="field">
+            <label for="specialty">Uzmanlık</label>
+            <div class="input-wrapper">
+              <select id="specialty" required></select>
+            </div>
+            <p class="field-hint">Doktorun hasta profili ve klinik önceliklerini belirler.</p>
           </div>
-          <div class="metric-row">
-            <span class="metric-label">Doktor Memnuniyeti:</span>
-            <div id="satisfactionBar" class="satisfaction-bar">
-              <div id="satisfactionFill" class="satisfaction-fill"></div>
+          <div class="field">
+            <label for="personality">Kişilik</label>
+            <div class="input-wrapper">
+              <select id="personality" required></select>
+            </div>
+            <p class="field-hint">İletişim tonu ve soruların keskinliğini tanımlar.</p>
+          </div>
+          <div class="field">
+            <label for="drugCategory">İlaç Kategorisi</label>
+            <div class="input-wrapper">
+              <select id="drugCategory" required></select>
+            </div>
+            <p class="field-hint">Doktorun odaklanacağı terapötik alanı seçin.</p>
+          </div>
+          <div class="field">
+            <label for="difficulty">Zorluk</label>
+            <div class="input-wrapper">
+              <select id="difficulty" required></select>
+            </div>
+            <p class="field-hint">Görüşmenin yoğunluğunu ve beklenti düzeyini belirler.</p>
+          </div>
+          <div class="form-actions">
+            <button id="startBtn" type="submit" class="button button-primary">Simülasyonu Başlat</button>
+          </div>
+        </form>
+        <div class="scenario-guide">
+          <h3>Hazırlık Notları</h3>
+          <ul>
+            <li>Başlamadan önce hedef doktor personanızı zihninizde canlandırın.</li>
+            <li>İlk mesajınızda gündemi net bir şekilde paylaşın.</li>
+            <li>Yanıtlar geldikçe açık uçlu sorularla derine inin.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card session-card" aria-labelledby="session-title">
+        <div class="card-header">
+          <span class="card-eyebrow">Görüşme Alanı</span>
+          <h2 id="session-title">Oturumu Başlatın</h2>
+          <p>Senaryoyu başlattığınızda seçtiğiniz profile sahip doktor burada görünecek.</p>
+        </div>
+
+        <div class="session-meta">
+          <div id="doctorProfile" class="doctor-profile hidden" aria-live="polite">
+            <div class="avatar-stack">
+              <div class="avatar-ring">
+                <div id="doctorAvatar" class="doctor-avatar" aria-hidden="true">🩺</div>
+                <div id="doctorAnimation" class="doctor-animation hidden" aria-hidden="true">
+                  <span class="avatar-wave"></span>
+                </div>
+              </div>
+            </div>
+            <div class="doctor-details">
+              <div class="doctor-heading">
+                <div class="doctor-identity">
+                  <span class="doctor-label">Dr.</span>
+                  <span id="doctorName" class="doctor-name">-</span>
+                </div>
+                <span id="doctorStatus" class="status-pill">Hazır</span>
+              </div>
+              <div class="doctor-extra">
+                <span id="doctorSpecialty" class="doctor-specialty">-</span>
+                <span id="doctorPersonality" class="personality-pill">-</span>
+              </div>
             </div>
           </div>
-          <div class="suggestions">
-            <h4>💡 İyileştirme Önerileri</h4>
-            <ul id="suggestionsList">
-              <li>Doktorun ihtiyaçlarını daha iyi anlayın</li>
-              <li>Açık uçlu sorular sorun</li>
-            </ul>
+          <div class="session-toolbar">
+            <button id="toggleTTS" type="button" class="button button-icon disabled" title="Sesli yanıtları aç" aria-label="Doktor sesli yanıtları" disabled>🔊</button>
+            <button id="toggleTraining" type="button" class="button button-ghost" disabled>Performans Rehberi</button>
           </div>
         </div>
-      </div>
 
-      <div id="chat" class="chat-window"></div>
-      <div id="typingIndicator" class="typing-indicator hidden">
-        <div class="typing-dots">
-          <span></span><span></span><span></span>
+        <div id="trainingPanel" class="training-panel hidden" aria-live="polite">
+          <div class="training-header">
+            <div>
+              <h3>Performans Analizi</h3>
+              <p>Canlı metrikler ve öneriler görüşme boyunca güncellenir.</p>
+            </div>
+            <button type="button" class="button button-icon" data-action="close-training" aria-label="Performans panelini gizle">×</button>
+          </div>
+          <div id="trainingContent" class="training-content">
+            <div class="metric-row">
+              <span class="metric-label">Konuşma Süresi</span>
+              <span id="conversationTime" class="metric-value">0:00</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Mesaj Sayısı</span>
+              <span id="messageCount" class="metric-value">0</span>
+            </div>
+            <div class="metric-row satisfaction">
+              <span class="metric-label">Doktor Memnuniyeti</span>
+              <div class="satisfaction-bar">
+                <div id="satisfactionFill" class="satisfaction-fill"></div>
+              </div>
+            </div>
+            <div class="suggestions">
+              <h4>Gelişim Önerileri</h4>
+              <ul id="suggestionsList">
+                <li>Doktorun ihtiyacını anlamak için derinlemesine soru sorun.</li>
+                <li>Klinik verileri hazırlayıp paylaşmaya hazır olun.</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <span class="typing-text">Doktor düşünüyor...</span>
-      </div>
-      <div id="speakingIndicator" class="speaking-indicator hidden">
-        <div class="speaking-wave">🎵</div>
-        <span class="speaking-text">Doktor konuşuyor...</span>
-      </div>
-      <form id="message-form" class="message-form" autocomplete="off">
-        <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="icon-btn" disabled>🎙️</button>
-        <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın..." required></textarea>
-        <button id="sendBtn" type="submit" class="primary" disabled>📤 Gönder</button>
-      </form>
-      
-      <div class="record-row">
-        <div id="recordIndicator" class="record-indicator hidden"><span class="dot"></span> Kaydediliyor</div>
-        <div id="recordHint" class="record-hint hidden">Basılı tutup konuşarak mesajınızı iletebilirsiniz</div>
-      </div>
-    </section>
-  </main>
+
+        <div id="chat" class="chat-window" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">💬</div>
+          <h3>Görüşme Hazır</h3>
+          <p>Simülasyonu başlattığınızda doktor ilk mesajı ile sizi karşılayacak.</p>
+        </div>
+        <div id="typingIndicator" class="typing-indicator hidden">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+          <span class="typing-text">Doktor düşünüyor...</span>
+        </div>
+        <div id="speakingIndicator" class="speaking-indicator hidden">
+          <div class="speaking-wave"></div>
+          <span class="speaking-text">Doktor konuşuyor...</span>
+        </div>
+
+        <form id="message-form" class="message-form" autocomplete="off">
+          <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="button button-icon" disabled>🎙️</button>
+          <div class="textarea-wrapper">
+            <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın veya mikrofonla aktarın" required></textarea>
+          </div>
+          <button id="sendBtn" type="submit" class="button button-primary" disabled>Gönder</button>
+        </form>
+
+        <div class="record-row">
+          <div id="recordIndicator" class="record-indicator hidden"><span class="dot"></span>Kayıt yapılıyor</div>
+          <div id="recordHint" class="record-hint hidden">Basılı tutarak mikrofondan konuşabilirsiniz.</div>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="/scripts/scenario-manager.js"></script>
   <script src="/scripts/api-client.js"></script>
@@ -128,5 +193,4 @@
   <script src="/scripts/app.js"></script>
 </body>
 </html>
-
 

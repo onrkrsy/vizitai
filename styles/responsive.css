@@ -1,7 +1,19 @@
-@media (max-width: 960px) {
-  .container {
-    grid-template-columns: 1fr;
+﻿@media (max-width: 1040px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .session-card {
+    order: -1;
   }
 }
 
+@media (max-width: 720px) {
+  .scenario-guide ul {
+    padding-left: 16px;
+  }
 
+  .training-panel {
+    padding: 18px;
+  }
+}

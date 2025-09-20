@@ -1,9 +1,17 @@
-window.TrainingManager = (() => {
+﻿window.TrainingManager = (() => {
   let startTime = null;
   let messageCount = 0;
   let satisfactionScore = 50;
   let suggestions = [];
   let updateInterval = null;
+  let visible = false;
+
+  const panel = document.getElementById('trainingPanel');
+  const toggleBtn = document.getElementById('toggleTraining');
+  const timeEl = document.getElementById('conversationTime');
+  const countEl = document.getElementById('messageCount');
+  const satisfactionEl = document.getElementById('satisfactionFill');
+  const suggestionsEl = document.getElementById('suggestionsList');
 
   function startSession() {
     startTime = Date.now();
@@ -11,8 +19,7 @@ window.TrainingManager = (() => {
     satisfactionScore = 50;
     suggestions = [];
     updateDisplay();
-    
-    // Start timer for conversation time
+
     if (updateInterval) {
       clearInterval(updateInterval);
     }
@@ -26,35 +33,44 @@ window.TrainingManager = (() => {
     }
   }
 
+  function reset() {
+    stopSession();
+    startTime = null;
+    messageCount = 0;
+    satisfactionScore = 50;
+    suggestions = [];
+    updateDisplay();
+    hideTrainingPanel();
+  }
+
   function addMessage(role) {
     if (role === 'user') {
-      messageCount++;
+      messageCount += 1;
       updateDisplay();
     }
   }
 
-  function updateSatisfaction(change) {
+  function adjustSatisfaction(change) {
     satisfactionScore = Math.max(0, Math.min(100, satisfactionScore + change));
     updateDisplay();
   }
 
-  function addSuggestion(suggestion) {
-    if (!suggestions.includes(suggestion)) {
-      suggestions.push(suggestion);
-      updateSuggestions();
-    }
+  function addSuggestion(entry) {
+    if (!entry || suggestions.includes(entry)) return;
+    suggestions.push(entry);
+    updateSuggestions();
   }
 
   function updateDisplay() {
-    const timeEl = document.getElementById('conversationTime');
-    const countEl = document.getElementById('messageCount');
-    const satisfactionEl = document.getElementById('satisfactionFill');
-
-    if (timeEl && startTime) {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
-      timeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    if (timeEl) {
+      if (!startTime) {
+        timeEl.textContent = '0:00';
+      } else {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        timeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      }
     }
 
     if (countEl) {
@@ -67,81 +83,76 @@ window.TrainingManager = (() => {
   }
 
   function updateSuggestions() {
-    const listEl = document.getElementById('suggestionsList');
-    if (listEl) {
-      listEl.innerHTML = suggestions.map(s => `<li>${s}</li>`).join('');
-    }
+    if (!suggestionsEl) return;
+    suggestionsEl.innerHTML = suggestions.map((item) => `<li>${item}</li>`).join('');
   }
 
   function analyzeMessage(message, role) {
-    if (role === 'user') {
-      // Basit analiz - gerçek uygulamada daha sofistike olabilir
-      if (message.includes('?')) {
-        updateSatisfaction(5);
-        if (message.includes('nasıl') || message.includes('neden') || message.includes('hangi')) {
-          addSuggestion('✅ Açık uçlu sorular soruyorsunuz - harika!');
-        }
-      }
-      
-      if (message.length < 20) {
-        addSuggestion('💡 Mesajlarınızı biraz daha detaylandırabilirsiniz');
-      }
-      
-      if (message.includes('yan etki') || message.includes('güvenlik') || message.includes('kontrendikasyon')) {
-        addSuggestion('✅ Güvenlik konularını ele alıyorsunuz - doktorlar bunu takdir eder');
-        updateSatisfaction(10);
-      }
+    if (role !== 'user' || !message) return;
+    const lower = message.toLocaleLowerCase('tr-TR');
 
-      if (message.includes('hasta') || message.includes('deneyim') || message.includes('vaka')) {
-        addSuggestion('✅ Hasta deneyimlerinden bahsediyorsunuz - etkili bir yaklaşım');
-        updateSatisfaction(8);
+    if (message.includes('?')) {
+      adjustSatisfaction(5);
+      if (lower.includes('nasıl') || lower.includes('neden') || lower.includes('hangi')) {
+        addSuggestion('Açık uçlu sorularla derinleşiyorsunuz, böyle devam edin.');
       }
+    }
 
-      if (message.includes('maliyet') || message.includes('fiyat') || message.includes('ekonomik')) {
-        addSuggestion('✅ Maliyet-etkinlik konusunu ele alıyorsunuz');
-        updateSatisfaction(7);
-      }
+    if (message.length < 20) {
+      addSuggestion('Yanıtlarınızı biraz daha detaylandırarak güven oluşturabilirsiniz.');
+    }
 
-      // Negatif puanlar
-      if (message.includes('satın al') || message.includes('satış')) {
-        addSuggestion('⚠️ Doğrudan satış dilinden kaçının, tıbbi faydalara odaklanın');
-        updateSatisfaction(-5);
-      }
+    if (lower.includes('yan etki') || lower.includes('güvenlik') || lower.includes('kontrendikasyon')) {
+      addSuggestion('Güvenlik konularını masaya yatırmanız doktorların güvenini artırır.');
+      adjustSatisfaction(10);
+    }
 
-      if (message.length > 200) {
-        addSuggestion('💡 Mesajlarınızı daha kısa tutarak doktorun dikkatini koruyun');
-        updateSatisfaction(-3);
-      }
+    if (lower.includes('hasta') || lower.includes('deneyim') || lower.includes('vaka')) {
+      addSuggestion('Hasta deneyimlerine bağlamanız hikâyeyi güçlendiriyor.');
+      adjustSatisfaction(8);
+    }
+
+    if (lower.includes('maliyet') || lower.includes('fiyat') || lower.includes('ekonomik')) {
+      addSuggestion('Maliyet-etkinlik çerçevesini sunmanız karar sürecine yardımcı olur.');
+      adjustSatisfaction(7);
+    }
+
+    if (lower.includes('satın al') || lower.includes('satış')) {
+      addSuggestion('Doğrudan satış dili yerine klinik faydaya odaklanmayı deneyin.');
+      adjustSatisfaction(-6);
+    }
+
+    if (message.length > 220) {
+      addSuggestion('Mesajlarınızı daha kompakt tutarak dikkati canlı tutabilirsiniz.');
+      adjustSatisfaction(-4);
     }
   }
 
   function showTrainingPanel() {
-    const panel = document.getElementById('trainingPanel');
-    if (panel) {
-      panel.classList.remove('hidden');
+    if (!panel) return;
+    panel.classList.remove('hidden');
+    visible = true;
+    if (toggleBtn) {
+      toggleBtn.textContent = 'Rehberi Gizle';
+      toggleBtn.setAttribute('aria-expanded', 'true');
     }
   }
 
   function hideTrainingPanel() {
-    const panel = document.getElementById('trainingPanel');
-    if (panel) {
-      panel.classList.add('hidden');
+    if (!panel) return;
+    panel.classList.add('hidden');
+    visible = false;
+    if (toggleBtn) {
+      toggleBtn.textContent = 'Performans Rehberi';
+      toggleBtn.setAttribute('aria-expanded', 'false');
     }
   }
 
   function toggleTrainingPanel() {
-    const panel = document.getElementById('trainingPanel');
-    const content = document.getElementById('trainingContent');
-    const toggleBtn = document.getElementById('toggleTraining');
-    
-    if (panel && content && toggleBtn) {
-      if (content.style.display === 'none') {
-        content.style.display = 'grid';
-        toggleBtn.textContent = '📈';
-      } else {
-        content.style.display = 'none';
-        toggleBtn.textContent = '📊';
-      }
+    if (visible) {
+      hideTrainingPanel();
+    } else {
+      showTrainingPanel();
     }
   }
 
@@ -157,13 +168,15 @@ window.TrainingManager = (() => {
   return {
     startSession,
     stopSession,
+    reset,
     addMessage,
-    updateSatisfaction,
-    addSuggestion,
     analyzeMessage,
+    adjustSatisfaction,
+    addSuggestion,
     showTrainingPanel,
     hideTrainingPanel,
     toggleTrainingPanel,
     getSessionStats
   };
 })();
+
