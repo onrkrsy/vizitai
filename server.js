@@ -31,10 +31,10 @@ app.use('/api/chat', chatRouter);
 export default app;
 
 // Local development için
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`Server listening on http://localhost:${port}`);
   });
-}
+// }
 
 

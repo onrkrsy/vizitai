@@ -25,7 +25,9 @@
   const sessionTitle = document.getElementById('session-title');
   const headerStatusDot = document.querySelector('.status-chip .status-dot');
   const headerStatusText = document.querySelector('.status-chip .status-text');
-
+  const layout = document.querySelector('.layout');
+  const mobileBackBtn = document.getElementById('mobileBackBtn');
+  const mobileContinueBtn = document.getElementById('mobileContinueBtn');
   const personalityLabels = {
     acik_fikirli: 'Açık fikirli',
     skeptik: 'Şüpheci',
@@ -54,6 +56,8 @@
     endokrinoloji: '🧪'
   };
 
+  const mobileFlowQuery = window.matchMedia('(max-width: 820px)');
+
   let sessionId = null;
   let recognitionSupported = false;
   let recognition = null;
@@ -67,12 +71,47 @@
   let isCapturingHold = false;
   let currentConfig = null;
   let ttsEnabled = false;
+  let isMobileFlow = mobileFlowQuery.matches;
+  let currentMobileView = 'setup';
+
+  function setMobileView(view) {
+    currentMobileView = view;
+    if (layout) {
+      layout.dataset.view = view;
+    }
+  }
+
+  function refreshMobileControls() {
+    const hasSession = Boolean(sessionId);
+    if (mobileContinueBtn) {
+      mobileContinueBtn.classList.toggle('hidden', !hasSession);
+    }
+    if (mobileBackBtn) {
+      if (hasSession) {
+        mobileBackBtn.removeAttribute('disabled');
+      } else {
+        mobileBackBtn.setAttribute('disabled', 'disabled');
+      }
+    }
+  }
 
   function autosizeTextarea() {
     if (!messageInput) return;
     messageInput.style.height = 'auto';
     messageInput.style.height = Math.min(messageInput.scrollHeight, 160) + 'px';
   }
+
+  function handleMobileFlowChange(event) {
+    isMobileFlow = event.matches;
+    if (isMobileFlow) {
+      setMobileView(sessionId ? 'session' : 'setup');
+    } else {
+      setMobileView('setup');
+    }
+    refreshMobileControls();
+  }
+
+
 
   function setDoctorStatus(label, variant = 'idle') {
     if (!doctorStatus) return;
@@ -122,6 +161,11 @@
     if (doctorAnimation) {
       doctorAnimation.classList.remove('active');
     }
+    hideDoctorProfile();
+    if (doctorName) doctorName.textContent = '-';
+    if (doctorSpecialty) doctorSpecialty.textContent = '-';
+    if (doctorPersonality) doctorPersonality.textContent = '-';
+    if (doctorAvatar) doctorAvatar.textContent = '🩺';
     if (window.TrainingManager) {
       window.TrainingManager.reset?.();
       window.TrainingManager.hideTrainingPanel();
@@ -141,6 +185,9 @@
     if (sessionTitle) {
       sessionTitle.textContent = 'Oturumu Başlatın';
     }
+    currentConfig = null;
+    setMobileView('setup');
+    refreshMobileControls();
   }
 
   function parseDoctorResponse(text) {
@@ -364,6 +411,8 @@
 
       const { sessionId: sid, message } = await window.ApiClient.start(config);
       sessionId = sid;
+      setMobileView('session');
+      refreshMobileControls();
 
       chat.innerHTML = '';
       hideTypingIndicator();
@@ -554,7 +603,7 @@
     }
   }
 
-  async function startRecording() {
+  async function startRecording(event) {
     if (!sessionId) {
       addMeta('Önce senaryoyu başlatın.');
       return;
@@ -656,10 +705,42 @@
       toggleTTSBtn.textContent = '🔇';
       toggleTTSBtn.title = 'Sesli yanıt kapalı - açmak için tıklayın';
     }
+    if (mobileBackBtn) {
+      mobileBackBtn.addEventListener('click', () => {
+        setMobileView('setup');
+        try {
+          startBtn?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (_) {
+          // ignore scroll issues
+        }
+        startBtn?.focus();
+      });
+    }
+
+    if (mobileContinueBtn) {
+      mobileContinueBtn.addEventListener('click', () => {
+        setMobileView('session');
+        try {
+          chat?.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+        } catch (_) {
+          chat.scrollTop = chat.scrollHeight;
+        }
+        messageInput?.focus();
+      });
+    }
+
+    if (typeof mobileFlowQuery.addEventListener === 'function') {
+      mobileFlowQuery.addEventListener('change', handleMobileFlowChange);
+    } else if (typeof mobileFlowQuery.addListener === 'function') {
+      mobileFlowQuery.addListener(handleMobileFlowChange);
+    }
+
+    handleMobileFlowChange(mobileFlowQuery);
+
 
     holdToTalkBtn?.addEventListener('mousedown', startRecording);
     document.addEventListener('mouseup', stopRecording);
-    holdToTalkBtn?.addEventListener('touchstart', startRecording, { passive: true });
+    holdToTalkBtn?.addEventListener('touchstart', startRecording, { passive: false });
     holdToTalkBtn?.addEventListener('touchend', stopRecording, { passive: true });
 
     document.addEventListener('keydown', (event) => {
@@ -682,4 +763,6 @@
 
   init();
 })();
+
+
 

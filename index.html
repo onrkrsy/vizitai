@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tıbbi Mümessil Simülasyonu</title>
+  <title>VizitAi - Tıbbi Mümessil Simülasyonu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
@@ -15,12 +15,13 @@
   <div class="app-shell">
     <header class="app-header">
       <div class="header-text">
+        
         <span class="header-eyebrow">Simülasyon Platformu</span>
-        <h1>Tıbbi Mümessil Eğitim Simülasyonu</h1>
+        <h1>VizitAi</h1>
         <p class="subtitle">AI destekli doktor görüşmesi pratiği</p>
       </div>
       <div class="header-meta">
-        <span class="version-pill">V 1.0</span>
+ 
         <div class="status-chip" aria-live="polite">
           <span class="status-dot status-idle" aria-hidden="true"></span>
           <span class="status-text">Oturum hazır</span>
@@ -28,8 +29,12 @@
       </div>
     </header>
 
-    <main class="layout" aria-label="Simülasyon arayüzü">
-      <section class="card setup-card" aria-labelledby="setup-title">
+    <main class="layout" aria-label="Simülasyon arayüzü" data-view="setup">
+      <section class="card setup-card" aria-labelledby="setup-title" data-pane="setup">
+        <div class="mobile-stepper mobile-only">
+          <span class="step-indicator">Adım 1 / 2</span>
+          <button id="mobileContinueBtn" type="button" class="button button-outline hidden">Görüşmeye Dön</button>
+        </div>
         <div class="card-header">
           <span class="card-eyebrow">Senaryo Ayarları</span>
           <h2 id="setup-title">Simülasyonu Kurgula</h2>
@@ -85,7 +90,11 @@
         </div>
       </section>
 
-      <section class="card session-card" aria-labelledby="session-title">
+      <section class="card session-card" aria-labelledby="session-title" data-pane="session">
+        <div class="mobile-stepper mobile-only">
+          <span class="step-indicator">Adım 2 / 2</span>
+          <button id="mobileBackBtn" type="button" class="button button-outline">Senaryo Ayarlarına Dön</button>
+        </div>
         <div class="card-header">
           <span class="card-eyebrow">Görüşme Alanı</span>
           <h2 id="session-title">Oturumu Başlatın</h2>
