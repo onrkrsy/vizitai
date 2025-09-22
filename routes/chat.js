@@ -22,7 +22,8 @@ function buildSystemInstruction(config) {
   const drugInfo = {
     antihipertansif: 'Hipertansiyon tedavisinde kullanılan ilaçlar. ACE inhibitörleri, ARB\'ler, diüretikler, kalsiyum kanal blokerleri.',
     antibiyotik: 'Bakteriyel enfeksiyon tedavisinde kullanılan ilaçlar. Spektrum, direnç, yan etkiler önemli.',
-    antidiyabetik: 'Diyabet tedavisinde kullanılan ilaçlar. Metformin, SGLT2 inhibitörleri, GLP-1 agonistleri, insülin.'
+    antidiyabetik: 'Diyabet tedavisinde kullanılan ilaçlar. Metformin, SGLT2 inhibitörleri, GLP-1 agonistleri, insülin.',
+    dermokozmetik: 'Akne, bariyer onarımı, leke tedavisi ve güneş koruması için dermokozmetik ürünler. Aktif içerik etkinliği, tolerabilite, estetik tercih ve hasta uyumunu sorgula.'
   };
 
   const personalityDesc = personalityTraits[personality] || 'Nötr yaklaşım sergiler.';

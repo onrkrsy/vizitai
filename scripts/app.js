@@ -39,21 +39,24 @@
     dahiliye: 'Dahiliye',
     kardiyoloji: 'Kardiyoloji',
     onkoloji: 'Onkoloji',
-    endokrinoloji: 'Endokrinoloji'
+    endokrinoloji: 'Endokrinoloji', 
+    dermatoloji: 'Dermokozmetik (Akne ve Güneş Koruma)'
   };
 
   const specialtyNames = {
     dahiliye: 'Ahmet Sevgi',
     kardiyoloji: 'Mehmet Yılmaz',
     onkoloji: 'Ayşe Demir',
-    endokrinoloji: 'Can Özkan'
+    endokrinoloji: 'Can Özkan',
+    dermatoloji: 'Elif Kaya'
   };
 
   const specialtyAvatars = {
     dahiliye: '🩺',
     kardiyoloji: '❤️',
     onkoloji: '🧬',
-    endokrinoloji: '🧪'
+    endokrinoloji: '🧪',
+    dermatoloji: '🧴'
   };
 
   const mobileFlowQuery = window.matchMedia('(max-width: 820px)');

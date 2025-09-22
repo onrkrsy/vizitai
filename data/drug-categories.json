@@ -1,7 +1,8 @@
 [
   { "value": "antihipertansif", "label": "Antihipertansif" },
   { "value": "antibiyotik", "label": "Antibiyotik" },
-  { "value": "antidiyabetik", "label": "Antidiyabetik" }
+  { "value": "antidiyabetik", "label": "Antidiyabetik" },
+  { "value": "dermokozmetik", "label": "Dermokozmetik (Akne ve Güneş Koruma)" }
 ]
 
 

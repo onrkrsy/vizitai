@@ -2,7 +2,8 @@
   { "value": "dahiliye", "label": "Dahiliye" },
   { "value": "kardiyoloji", "label": "Kardiyoloji" },
   { "value": "onkoloji", "label": "Onkoloji" },
-  { "value": "endokrinoloji", "label": "Endokrinoloji" }
+  { "value": "endokrinoloji", "label": "Endokrinoloji" },
+  { "value": "dermatoloji", "label": "Dermatoloji" }
 ]
 
 
