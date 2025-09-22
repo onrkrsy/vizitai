@@ -859,27 +859,14 @@ textarea {
   touch-action: manipulation; width: 100%; }
 }
 
-@media (max-width: 620px) {
-  .app-header { padding: 22px 18px; }
-  .layout { padding: 20px; gap: 20px; }
-  .card { padding: 24px; }
-  .session-meta { flex-direction: column; align-items: stretch; }
-  .session-toolbar { justify-content: flex-end; }
-  .doctor-profile { width: 100%; }
-  .message-form { flex-direction: column; align-items: stretch; }
-  .button-icon {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  touch-action: manipulation; width: 48px; height: 48px; }
-  .textarea-wrapper { width: 100%; }
-  .message-form .button-primary { width: 100%; justify-content: center; }
-}
+@media (max-width: 620px) {\n  .app-header { padding: 22px 18px; }\n  .layout { padding: 20px; gap: 20px; }\n  .card { padding: 24px; }\n  .session-meta { flex-direction: column; align-items: stretch; }\n  .session-toolbar { justify-content: flex-end; }\n  .doctor-profile { width: 100%; }\n  .message-form {\n    display: grid;\n    grid-template-columns: 1fr auto auto;\n    align-items: end;\n    gap: 8px;\n  }\n  .textarea-wrapper {\n    width: 100%;\n    grid-column: 1 / 2;\n  }\n  .message-form .button-primary {\n    justify-content: center;\n    width: auto;\n    padding-inline: 18px;\n  }\n  #sendBtn {\n    grid-column: 2 / 3;\n  }\n  #holdToTalkBtn {\n    grid-column: 3 / 4;\n    width: 48px;\n    height: 48px;\n  }\n}\n
 
 @media (max-width: 480px) {
   .setup-card .form-grid { grid-template-columns: 1fr; }
   .card { gap: 20px; }
 }
+
+
 
 
 
