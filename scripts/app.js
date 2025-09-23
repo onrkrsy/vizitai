@@ -1,4 +1,43 @@
 ﻿(() => {
+  // Global config state
+  let appConfig = { audioEnabled: false };
+  
+  // Load config from server
+  async function loadConfig() {
+    try {
+      const response = await fetch('/api/config');
+      appConfig = await response.json();
+      initializeAudioFeatures();
+    } catch (error) {
+      console.warn('Config yüklenemedi, ses özellikleri devre dışı:', error);
+      initializeAudioFeatures();
+    }
+  }
+
+  // Initialize audio features based on config
+  function initializeAudioFeatures() {
+    const audioElements = document.querySelectorAll('.audio-feature');
+    audioElements.forEach(element => {
+      if (appConfig.audioEnabled) {
+        element.classList.remove('hidden');
+      } else {
+        element.classList.add('hidden');
+      }
+    });
+
+    // Update placeholder text based on audio availability
+    if (messageInput) {
+      messageInput.placeholder = appConfig.audioEnabled 
+        ? "Mesajınızı yazın veya mikrofonla aktarın"
+        : "Mesajınızı yazın";
+    }
+
+    // Initialize speech recognition if audio is enabled
+    if (appConfig.audioEnabled) {
+      initSpeechRecognition();
+    }
+  }
+
   const form = document.getElementById('scenario-form');
   const startBtn = document.getElementById('startBtn');
   const messageForm = document.getElementById('message-form');
@@ -346,7 +385,7 @@
 
   async function playTTS(text, personality) {
     try {
-      if (!ttsEnabled) return;
+      if (!ttsEnabled || !appConfig.audioEnabled) return;
       if (!window.speechSynthesis) {
         console.warn('Speech synthesis not supported');
         return;
@@ -648,6 +687,12 @@
   }
 
   function initSpeechRecognition() {
+    // Only initialize if audio is enabled
+    if (!appConfig.audioEnabled) {
+      recognitionSupported = false;
+      return;
+    }
+    
     try {
       const hasAPI = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
       const secure = window.isSecureContext;
@@ -679,8 +724,8 @@
   }
 
   function init() {
+    loadConfig(); // Load config first
     resetConversation();
-    initSpeechRecognition();
     window.ScenarioManager.initSelectors();
 
     form?.addEventListener('submit', startSimulation);

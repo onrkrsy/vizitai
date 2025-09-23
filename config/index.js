@@ -10,6 +10,7 @@ export function loadAppConfig() {
     LLM_PROVIDER: process.env.LLM_PROVIDER || 'gemini',
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
     GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+    AUDIO_ENABLED: process.env.AUDIO_ENABLED === 'true' || false,
   };
 
   // Fallback to config/local.json if present
@@ -21,6 +22,7 @@ export function loadAppConfig() {
       if (json.LLM_PROVIDER) cfg.LLM_PROVIDER = json.LLM_PROVIDER;
       if (json.GEMINI_API_KEY) cfg.GEMINI_API_KEY = json.GEMINI_API_KEY;
       if (json.GEMINI_MODEL) cfg.GEMINI_MODEL = json.GEMINI_MODEL;
+      if (json.AUDIO_ENABLED !== undefined) cfg.AUDIO_ENABLED = json.AUDIO_ENABLED;
     }
   } catch (e) {
     // ignore

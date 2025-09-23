@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import chatRouter from './routes/chat.js';
+import { loadAppConfig } from './config/index.js';
 
 dotenv.config();
 
@@ -26,6 +27,14 @@ app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // API routes
 app.use('/api/chat', chatRouter);
+
+// Config endpoint for frontend
+app.get('/api/config', (req, res) => {
+  const config = loadAppConfig();
+  res.json({
+    audioEnabled: config.AUDIO_ENABLED
+  });
+});
 
 // Vercel deployment için export
 export default app;

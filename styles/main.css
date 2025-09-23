@@ -775,12 +775,23 @@ textarea {
 
 .message-form {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
   gap: 12px;
   background: rgba(248, 250, 252, 0.92);
   border-radius: var(--radius-md);
   border: 1px solid rgba(148, 163, 184, 0.25);
   padding: 12px 14px;
+}
+
+.input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .textarea-wrapper { flex: 1; display: flex; }
@@ -859,18 +870,36 @@ textarea {
   touch-action: manipulation; width: 100%; }
 }
 
-@media (max-width: 620px) {  .app-header { padding: 22px 18px; }  .layout { padding: 20px; gap: 20px; }  .card { padding: 24px; }  .session-meta { flex-direction: column; align-items: stretch; }  .session-toolbar { justify-content: flex-end; }  .doctor-profile { width: 100%; }  .message-form {    display: grid;    grid-template-columns: 1fr auto auto;    align-items: end;    gap: 8px;  }  .textarea-wrapper {    width: 100%;    grid-column: 1 / 2;  }  .message-form .button-primary {    justify-content: center;    width: auto;    padding-inline: 18px;  }  #sendBtn {    grid-column: 2 / 3;  }  #holdToTalkBtn {    grid-column: 3 / 4;    width: 48px;    height: 48px;  }}
+@media (max-width: 620px) { 
+  .app-header { padding: 22px 18px; } 
+  .layout { padding: 20px; gap: 20px; } 
+  .card { padding: 24px; } 
+  .session-meta { flex-direction: column; align-items: stretch; } 
+  .session-toolbar { justify-content: flex-end; } 
+  .doctor-profile { width: 100%; } 
+  .message-form {
+    gap: 8px;
+  }
+  .input-row {
+    gap: 8px;
+  }
+  .textarea-wrapper {
+    flex: 1;
+  }
+  .message-form .button-primary {
+    justify-content: center;
+    width: 100%;
+    padding-inline: 18px;
+  }
+  #holdToTalkBtn {
+    width: 48px;
+    height: 48px;
+  }
+}
 
 @media (max-width: 480px) {
   .setup-card .form-grid { grid-template-columns: 1fr; }
   .card { gap: 20px; }
 }
-
-
-
-
-
-
-
 
 

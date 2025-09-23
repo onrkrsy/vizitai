@@ -126,7 +126,7 @@
             </div>
           </div>
           <div class="session-toolbar">
-            <button id="toggleTTS" type="button" class="button button-icon disabled" title="Sesli yanıtları aç" aria-label="Doktor sesli yanıtları" disabled>🔊</button>
+            <button id="toggleTTS" type="button" class="button button-icon disabled audio-feature hidden" title="Sesli yanıtları aç" aria-label="Doktor sesli yanıtları" disabled>🔊</button>
             <button id="toggleTraining" type="button" class="button button-ghost" disabled>Performans Rehberi</button>
           </div>
         </div>
@@ -180,14 +180,18 @@
         </div>
 
         <form id="message-form" class="message-form" autocomplete="off">
-          <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="button button-icon" disabled>🎙️</button>
-          <div class="textarea-wrapper">
-            <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın veya mikrofonla aktarın" required></textarea>
+          <div class="input-row">
+            <div class="textarea-wrapper">
+              <textarea id="messageInput" rows="2" placeholder="Mesajınızı yazın" required></textarea>
+            </div>
+            <button id="holdToTalkBtn" type="button" title="Basılı tut ve konuş" aria-label="Basılı tut ve konuş" class="button button-icon audio-feature hidden" disabled>🎙️</button>
           </div>
-          <button id="sendBtn" type="submit" class="button button-primary" disabled>Gönder</button>
+          <div class="button-row">
+            <button id="sendBtn" type="submit" class="button button-primary" disabled>Gönder</button>
+          </div>
         </form>
 
-        <div class="record-row">
+        <div class="record-row audio-feature hidden">
           <div id="recordIndicator" class="record-indicator hidden"><span class="dot"></span>Kayıt yapılıyor</div>
           <div id="recordHint" class="record-hint hidden">Basılı tutarak mikrofondan konuşabilirsiniz.</div>
         </div>
